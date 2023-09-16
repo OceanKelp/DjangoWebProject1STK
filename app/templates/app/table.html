@@ -1,0 +1,107 @@
+{% extends "app/layout.html" %}
+{% load static %}
+
+{% csrf_token %} <!--<to prevent Cross Site Request Forgery attacks-->
+{% block content %}
+<h2>{{ title }}</h2>
+
+<table class="table" align="center" border="1">
+    <thead>
+        <tr>
+            <th><button onclick="myFunction()">Click me</button></th>
+            <th>First Name</th>
+            <th>Last Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in Model %}
+        <tr>
+            <td>{{ item.Source }}</td>
+            <td>{{ item.FirstName }}</td>
+            <td>{{ item.LastName }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- now add javascrip -->
+<p id=Reply>"file states"</p>
+<button onclick="myFunction()">Click me</button>
+
+<!--this does not work-->
+<button onclick="static\myFunctionxx()">Click me</button>
+
+
+
+<p id="demo"></p>
+
+
+<script>
+    function myFunction() {
+        document.getElementById("demo").innerHTML = "Hello World";
+    }
+</script>
+<!--  calls this file -->
+<script scr="C:\Users\herb\VS23\DJProject\DjangoWebProject1\app\static\JStable.js"></script>
+
+
+<input type="file" id="fileInput">
+<pre id="fileContents"></pre>
+
+<button id="uploadButton">Upload File</button>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+
+    fileInput.addEventListener('change', function (event) {
+        const selectedFile = event.target.files[0];
+
+        if (selectedFile) {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const fileContents = event.target.result;
+                const fileContentsDisplay = document.getElementById('fileContents');
+                fileContentsDisplay.textContent = fileContents;
+            };
+
+            reader.readAsText(selectedFile);
+        }
+    });
+
+    uploadButton.addEventListener('click', function () {
+        const selectedFile = fileInput.files[0];
+
+        const csrf_tokenx = "{{ csrf_token }}"; // This will inject the CSRF token into the JavaScript variable
+
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrf_tokenx); // Replace csrfToken with the actual token value
+            formData.append('file', selectedFile);
+
+            // ... Rest of your code
+
+
+
+            fetch('/upload/', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                   /* console.log('Server response:', data);*/
+                    const jsonString = JSON.stringify(data);
+                    document.getElementById("Reply").innerHTML = jsonString;
+                });
+        }
+    });
+
+
+
+</script>
+
+
+
+
+{% endblock %}
+

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>File Input Example</title>
+</head>
+<body>
+    <input type="file" id="fileInput">
+    <pre id="fileContents"></pre>
+    <button id="uploadButton">Upload</button>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileContentsDisplay = document.getElementById('fileContents');
+        const uploadButton = document.getElementById('uploadButton');
+       
+
+        fileInput.addEventListener('change', function(event) {
+            const selectedFile = event.target.files[0];
+
+            if (selectedFile) {
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    const fileContents = event.target.result;
+                    fileContentsDisplay.textContent = fileContents;
+                };
+
+                reader.readAsText(selectedFile);
+            }
+        });
+
+        uploadButton.addEventListener('click', function() {
+            const selectedFile = fileInput.files[0];
+
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                fetch('upload.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Server response:', data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
